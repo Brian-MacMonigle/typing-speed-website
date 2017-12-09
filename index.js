@@ -19,7 +19,7 @@ app.get('/api/random', (req, res) => {
 	res.json(randomWords(100));
 });
 
-app.get('/', (req, res) => {
+app.get('*', (req, res) => {
 	res.sendFile(path.join(__dirname+'/page/build/index.html'));
 });
 

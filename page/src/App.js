@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './App.css';
-import logo from './logo.svg';
 import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
 import Type from './Type';
 import About from './About';
@@ -11,7 +10,6 @@ class App extends Component {
   header() {
     return (
       <header>
-        <img src={logo} alt="Logo" />
         <Link to={'/'}>
           Home
         </Link>

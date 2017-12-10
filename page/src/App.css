@@ -147,3 +147,11 @@ footer {
 footer > * {
   text-align: center;
 }
+
+/* Tablet and Smaller */
+@media screen and (max-width: 768px) {
+	.input-box {
+		margin: 0;
+		padding: .25em;
+	}
+}

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import fetch from 'fetch-retry';
 
 function completedWord(word, typed) {
   let list = []
@@ -68,8 +69,15 @@ class Timer extends Component {
     return this.state.left;
   }
 
-  componentWillUnmount() {
+  stop() {
     clearInterval(this.timer);
+    this.setState({
+      started: false,
+    });
+  }
+
+  componentWillUnmount() {
+    this.stop();
   }
 
   tick() {
@@ -105,14 +113,25 @@ class InputBox extends Component {
       wpm: 0
     }
 
-    fetch('/api/random')
+    this.getWords();
+  }
+
+  getWords() {
+    fetch('/api/random', {
+      retries: 3,
+      retryDelay: 1000,
+    })
       .then(res => res.json())
       .then(json => this.setState({
         word: json.shift(),
         future: json
       }))
-      .catch(err => console.log("Error contacting sever: " + err));
+      .catch(err => this.setState({
+        word: "There",
+        future: ["was", "an", "issue", "retrieving", "words", "from", "the", "server.", "Please", "refresh", "the", "page", "and", "try", "again."],
+      }));
   }
+
 
   keyPressed(e) {
     //e.preventDefault();
@@ -129,7 +148,7 @@ class InputBox extends Component {
 
     // Next word
     if(e.key === " ") {
-      this.state.history.push([word, typed.slice(0, -1)]);
+      this.state.history.push([word, typed.trim()]);
       
       let next = this.state.future.shift();
       if(next === undefined) {
@@ -147,6 +166,7 @@ class InputBox extends Component {
       if(next === "") {
         e.target.placeholder = "We ran out of words.";
         e.target.disabled = true;
+        this.timer.stop();
       } else {
         e.target.placeholder = "";
       }

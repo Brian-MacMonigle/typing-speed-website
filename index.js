@@ -1,8 +1,74 @@
-var express = require('express');
-var app = express();
-var path = require('path');
+const express = require('express');
+const app = express();
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const uuidv1 = require('uuid/v1');
+const crypto = require('crypto');
+const hashAlg = 'sha256';
 
 app.use(express.static(path.join(__dirname, 'page/build')));
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({
+	extended: true,
+}));
+app.use(bodyParser.json());
+
+function hash(text) {
+	return crypto.createHash(hashAlg).update(text).digest('hex');
+}
+
+// Accounts Database
+class User {
+	constructor(name, pass) {
+		this.name = name;
+		// Generates random salt
+		this.salt = uuidv1();
+		this.hash = hash(this.salt + pass);
+		this.valid = [];
+	}
+
+	name() {
+		return this.name;
+	}
+
+	hash() {
+		return this.hash;
+	}
+
+	salt() {
+		return this.salt;
+	}
+
+	// TODO: Rewrite to use a hash function
+	isPassword(pass) {
+		return this.hash === hash(this.salt + pass);
+	}
+
+	addId(id) {
+		if(!this.isValidId(id)) {
+			this.valid.push(id);
+		}
+	}
+
+	isValidId(id) {
+		return this.valid.includes(id);
+	}
+
+	removeId(id) {
+		let index = this.valid.indexOf(id);
+		if(index > -1) {
+			this.valid.splice(index, 1);
+		}
+	}
+
+	toJSON() {
+		return {'name': this.name, 'hash': this.hash, 'salt': this.salt, 'validId': this.valid};
+	}
+}
+
+var Accounts = new Map();
+Accounts.set("Brian", new User("Brian", "pass"));
 
 function randomWords(amount) {
 	let out = [];
@@ -13,14 +79,90 @@ function randomWords(amount) {
 	return out;
 }
 
-app.get('/api/random', (req, res) => {
-	console.log("\nSent 100 random words");
+app.get('/login/create', (req, res) => {
+	res.send(webpage);
+});
 
+app.get('/login/users', (req, res) => {
+	let arr = [];
+	for(let val of Accounts.values()) {
+		arr.push(val);
+	}
+	res.json(arr);
+});
+
+app.post('/login/create', (req, res) => {
+	if(!Accounts.has(req.body.user.name)) {
+		console.log(req.body.user.name);
+		console.log(req.body.user.password);
+		Accounts.set(req.body.user.name, new User(req.body.user.name, req.body.user.password));
+		res.sendStatus(204);
+	} else {
+		console.log("Username already in use.");
+		res.send("Username in use.")
+	}
+});
+
+app.post('/login', (req, res) => {
+	let cookie = req.cookies['kill_me'];
+
+	if(cookie != undefined) {
+		let user = Accounts.get(cookie.user);
+		if(user !== undefined && user.isValidId(cookie.id)) {
+			res.json({'message': cookie.user + " is already logged in.", 'user': user.toJSON()});
+			return;
+		}
+	}
+
+	let user = Accounts.get(req.body.name);
+	if(user !== undefined && user.isPassword(req.body.password)) {
+		let id = uuidv1();
+		user.addId(id);
+		res.cookie("kill_me", {
+			"user": req.body.name,
+			"id": id,
+		})
+		.json({'message': "You have successfuly logged in.", 'user': user.toJSON()});
+	} else {
+		res.json({"error": "Invalid username or password"});
+	}
+});
+
+app.get('/api/random', (req, res) => {
 	res.json(randomWords(100));
 });
 
+app.get('/cookies', (req, res) => {
+	res.json(req.cookies);
+});
+
+// change to delete
+app.get('/cookies/clear', (req, res) => {
+	for(let cookie of Object.getOwnPropertyNames(req.cookies)) {
+		res.clearCookie(cookie);
+	}
+	res.sendStatus(204);
+});
+
+// change to delete
+app.get('/cookies/clear/:cookie', (req, res) => {
+	res.clearCookie(req.params.cookie);
+	res.sendStatus(204);
+});
+
+app.get('/cookies/:cookie', (req, res) => {
+	res.json(req.cookies[req.params.cookie]);
+});
+
+app.get('/', (req, res) => {
+	//res.sendFile(path.join(__dirname+'/page/build/index.html'));
+	res.cookie("New cookie", {"Cookie_value": "Value1", "Another_Entry:": "Cool Dude"});
+
+	res.send("Hi there.");
+});
+
 app.get('*', (req, res) => {
-	res.sendFile(path.join(__dirname+'/page/build/index.html'));
+	res.sendStatus(404);
 });
 
 app.listen(process.env.PORT || 5000, () => {

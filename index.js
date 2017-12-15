@@ -5,9 +5,7 @@ const path = require('path');
 app.use(express.static(path.join(__dirname, 'page/build')));
 
 app.get('*', (req, res) => {
-	res.sendStatus(404);
+	res.sendFile(__dirname + "page/build/index.html");
 });
 
-app.listen(process.env.PORT || 5000, () => {
-	console.log('Typing_Speed_Website listening on port 5000');
-});
+app.listen(process.env.PORT || 5000);

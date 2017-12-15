@@ -24,7 +24,6 @@ class App extends Component {
         <p>This website was programed by:</p>
         <p>
           <b>
-            <span style={{display: 'none'}}>Help me </span>
             Brian MacMonigle
           </b>
         </p>

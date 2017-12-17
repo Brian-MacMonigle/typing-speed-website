@@ -12,6 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2",
+    "fetch-cookie": "^0.7.0",
+    "node-fetch": "^1.7.3",
     "path": "^0.12.7"
   }
 }

@@ -252,10 +252,10 @@ class InputBox extends Component {
 class Type extends Component {
   render() {
     let visitor = "";
-    if(this.props.visitors > 0) {
+    if(this.props.visitor > 0) {
       visitor = (
         <p className="centered">
-          You are visitor number <b>{this.props.visitors}</b>
+          You are visitor number <b>{this.props.visitor}</b>
         </p>
         );
     }

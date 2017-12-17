@@ -9,7 +9,7 @@ class App extends Component {
     super(props);
 
     this.state = {
-      visitors: 0,
+      visitor: 0,
     }
 
     fetch("/api/visitor", {
@@ -19,7 +19,7 @@ class App extends Component {
     })
     .then(res => res.json())
     .then(json => this.setState({
-      visitors: json.visitors
+      visitor: json.visitor
     }))
     .catch(err => console.log("Error: " + err));
   }
@@ -56,7 +56,7 @@ class App extends Component {
         <div id="page">
           {this.header()}
           <div id="content">
-            <Route exact={true} path="/" render={props => <Type {...props} visitors={this.state.visitors}/>} />
+            <Route exact={true} path="/" render={props => <Type {...props} visitor={this.state.visitor}/>} />
             <Route path='/about' render={props => <About {...props} />} />
           </div>
           {this.footer()}

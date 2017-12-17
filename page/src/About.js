@@ -6,7 +6,7 @@ class About extends Component {
     return (
     	<div className="wrapper">
     		<h1>What is Typing Speed Tester?</h1>
-      		<h2>Breif History</h2>
+      		<h2>Brief History</h2>
       		<p>
       			This was created by Brian MacMonigle as a fun way to explore the React framework.
       		</p>

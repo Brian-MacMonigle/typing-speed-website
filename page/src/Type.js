@@ -250,13 +250,43 @@ class InputBox extends Component {
 }
 
 class Type extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      visitors: 0,
+    }
+
+    fetch("/api/visitor", {
+      headers: new Headers({
+        'Content-type': 'application/json'
+      })
+    })
+    .then(res => res.json())
+    .then(json => this.setState({
+      visitors: json.visitors
+    }))
+    .catch(err => console.log("Error: " + err));
+  }
+
+
   render() {
+    let visitor = "";
+    if(this.state.visitors > 0) {
+      visitor = (
+        <p className="centered">
+          You are visitor number <b>{this.state.visitors}</b>
+        </p>
+        );
+    }
+
     return (
       <div className="wrapper">
         <h1 className="centered">Test Your Typing Speed</h1>
         <p className="centered">
-            Type the words you see in the box.  Press space after every word.  Good Luck!
+          Type the words you see in the box.  Press space after every word.  Good Luck!
         </p>
+        {visitor}
         <InputBox />
       </div>
     );

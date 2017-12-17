@@ -5,6 +5,25 @@ import Type from './Type';
 import About from './About';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      visitors: 0,
+    }
+
+    fetch("/api/visitor", {
+      headers: new Headers({
+        'Content-type': 'application/json'
+      })
+    })
+    .then(res => res.json())
+    .then(json => this.setState({
+      visitors: json.visitors
+    }))
+    .catch(err => console.log("Error: " + err));
+  }
+
   header() {
     return (
       <header>
@@ -37,7 +56,7 @@ class App extends Component {
         <div id="page">
           {this.header()}
           <div id="content">
-            <Route exact={true} path="/" render={props => <Type {...props} />} />
+            <Route exact={true} path="/" render={props => <Type {...props} visitors={this.state.visitors}/>} />
             <Route path='/about' render={props => <About {...props} />} />
           </div>
           {this.footer()}

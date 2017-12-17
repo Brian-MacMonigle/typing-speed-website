@@ -250,32 +250,12 @@ class InputBox extends Component {
 }
 
 class Type extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      visitors: 0,
-    }
-
-    fetch("/api/visitor", {
-      headers: new Headers({
-        'Content-type': 'application/json'
-      })
-    })
-    .then(res => res.json())
-    .then(json => this.setState({
-      visitors: json.visitors
-    }))
-    .catch(err => console.log("Error: " + err));
-  }
-
-
   render() {
     let visitor = "";
-    if(this.state.visitors > 0) {
+    if(this.props.visitors > 0) {
       visitor = (
         <p className="centered">
-          You are visitor number <b>{this.state.visitors}</b>
+          You are visitor number <b>{this.props.visitors}</b>
         </p>
         );
     }

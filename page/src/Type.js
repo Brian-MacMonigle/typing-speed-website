@@ -252,6 +252,7 @@ class InputBox extends Component {
 class Type extends Component {
   render() {
     let visitor = "";
+    console.log("Visitor: " + this.props.visitor);
     if(this.props.visitor > 0) {
       visitor = (
         <p className="centered">

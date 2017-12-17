@@ -85,7 +85,7 @@ app.get('/api/visitor', (req, res) => {
 				value: 1
 			})
 		} else {
-			res.json({"vistor": val + 1});
+			res.json({"visitor": val + 1});
 			myPost['body'] = JSON.stringify({
 				name: 'visitor',
 				value: val + 1

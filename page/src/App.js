@@ -17,9 +17,8 @@ class App extends Component {
         'Content-type': 'application/json'
       })
     })
-    .then(res => res.json())
-    .then(json => this.setState({
-      visitor: json.visitor
+    .then(res => this.setState({
+      visitor: res
     }))
     .catch(err => console.log("Error: " + err));
   }

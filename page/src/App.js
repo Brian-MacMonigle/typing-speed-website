@@ -17,10 +17,15 @@ class App extends Component {
         'Content-type': 'application/json'
       })
     })
-    .then(res => this.setState({
-      visitor: res
-    }))
-    .catch(err => console.log("Error: " + err));
+    .then(res => res.json())
+    .then(json => {
+      if(json.status === 'success') {
+        this.setState({visitor: json.message});
+      } else {
+        return Promise.reject(json.message);  
+      }
+    })
+    .catch(err => console.log("Error: ", err));
   }
 
   header() {

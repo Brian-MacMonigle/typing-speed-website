@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "heroku-postbuild": "cd page && npm install --only=dev && npm install && npm run build"
+    //"heroku-postbuild": "cd page && npm install --only=dev && npm install && npm run build"
   },
   "author": "Brian MacMonigle",
   "license": "ISC",

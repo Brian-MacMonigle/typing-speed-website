@@ -11,10 +11,10 @@ function saveIp(req, res, next) {
 		method: 'POST',
 		body: JSON.stringify({ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress, path: req.path})
 	})
-	.then(() => fetch(api + '/read?path=ip'))
 	.then(r => r.json())
+	.then(r => req.ipSave = r)
 	.catch(err => console.log("Error: ", err))
-	next();
+	.then(() => next())
 }
 
 app.use(saveIp);
@@ -52,14 +52,7 @@ app.get('/api/visitor', (req, res) => {
 });
 
 app.get('*', (req, res) => {
-	fetch(api + '/write/ip', {
-		headers: {'Content-Type': 'application/json'},
-		method: 'POST',
-		body: JSON.stringify({ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress, path: req.path})
-	})
-	.then(r => r.json())
-	.then(json => res.json(json))
-	.catch(e => res.json(e));
+	res.json(req.ipSave);
 	//res.sendFile(__dirname + "page/build/index.html");
 });
 

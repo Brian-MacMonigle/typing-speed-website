@@ -11,17 +11,16 @@ function saveIp(req, res, next) {
 		method: 'POST',
 		body: JSON.stringify({ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress, path: req.path})
 	})
-	.then(r => r.json())
-	.then(r => req.ipSave = r)
-	.catch(err => console.log("Error: ", err))
-	.then(() => next())
+	.catch(err => console.log("Error: ", err));
+	next();
 }
 
 app.use(saveIp);
 
 const api = 'https://brian-user-account-service.herokuapp.com/api';
 const pass = "7bc2e5d2-61e1-4e16-a04a-4ad8dee90f44";
-var visitor = 0;
+var unique = 0;
+var total = 0;
 
 // login
 fetch(api + '/login', {	
@@ -34,25 +33,15 @@ fetch(api + '/login', {
 		if(json.status === 'error') {
 			return Promise.reject(json);
 		}
-		return fetch(api + '/read?path=visitor')
-			.catch(err => Promise.reject({status: 'error', message: err.toString()}))
-			.then(r => r.json())
-			.then(json => {
-				if(json.status === 'error') {
-					return Promise.reject(json);
-				}
-				console.log({status: 'success', message: 'Logged in and got visitor count.'});
-				visitor = json.message;
-			});
 	})
 	.catch(err => console.log(err));
 
 app.get('/api/visitor', (req, res) => {
-	res.json({status: 'success', message: visitor});
+	res.json({status: 'success', unique: unique, total: total});
 });
 
 app.get('*', (req, res) => {
-	res.json(req.ipSave);
+	res.json({unique: unique, total: total});
 	//res.sendFile(__dirname + "page/build/index.html");
 });
 
